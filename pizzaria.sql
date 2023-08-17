@@ -165,35 +165,35 @@ CREATE TABLE public.report (
 TRUNCATE TABLE public.report, public.order, public.product, public.flavor, public.delivery_people, public.address, public.client, public.employ, public.register_user RESTART IDENTITY;
 
 -- users
-INSERT INTO public.register_user (name, email, password)
+INSERT INTO public.register_user (name, email, password, salt)
 VALUES 
-    ('John Doe', 'john@example.com', 'hashed_password_123'),
-    ('Jane Smith', 'jane@example.com', 'hashed_password_456'),
-    ('Michael Brown', 'michael@example.com', 'hashed_password_789');
+    ('John Doe', 'john@example.com', 'hashed_password_123', 'some_salt_123'),
+    ('Jane Smith', 'jane@example.com', 'hashed_password_456', 'some_salt_456'),
+    ('Michael Brown', 'michael@example.com', 'hashed_password_789', 'some_salt_789');
 
 -- employee
 INSERT INTO public.employ (user_id, cpf, name, phone, permission, salary)
 VALUES
-    (1, '1234567890', 'Employee 1', 123456790, 'employee', 25000),
-    (2, '9876543210', 'Employee 2', 987654210, 'manager', 40000);
+    (1, '1234567890', 'Employee 1', '123456790', 'employee', 25000),
+    (2, '9876543210', 'Employee 2', '987654210', 'manager', 40000);
 
 -- client
 INSERT INTO public.client (user_id, address_id, cpf, name, phone)
 VALUES
-    (7, 1, '11111111111', 'Client 1', 111111111),
-    (8, 2, '22222222222', 'Client 2', 222222222);
+    (1, 1, '11111111111', 'Client 1', '111111111'),
+    (2, 2, '22222222222', 'Client 2', '222222222');
 
---addresses
-INSERT INTO public.address (streetName, streetNum, addressReference)
+-- addresses
+INSERT INTO public.address (streetName, streetNum, city, state, postal_code)
 VALUES
-    ('Main Street', 123, 'Apartment 1A'),
-    ('Second Avenue', 456, 'House 2');
+    ('Main Street', 123, 'City1', 'State1', '12345'),
+    ('Second Avenue', 456, 'City2', 'State2', '67890');
 
--- people
+-- deliveryP
 INSERT INTO public.delivery_people (employ_id, cpf, name, phone)
 VALUES
-    (1, '33333333333', 'Delivery Person 1', 333333333),
-    (2, '44444444444', 'Delivery Person 2', 444444444);
+    (1, '33333333333', 'Delivery Person 1', '333333333'),
+    (2, '44444444444', 'Delivery Person 2', '444444444');
 
 -- flavor
 INSERT INTO public.flavor (flavor_name, flavor_price, flavor_ingredients)
@@ -210,11 +210,11 @@ VALUES
     ('Veggie Delight', 'Healthy and flavorful vegetarian pizza', 10.49, 30, 3);
 
 -- order 
-INSERT INTO public.orders (payment, order_size, order_state, must_deliver, order_time, priceTotal, delivery_people, client, employ)
+INSERT INTO public.orders (payment, order_size, order_state, must_deliver, order_time, priceTotal, delivery_person_id, client_id, employ_id)
 VALUES
-    ('card', 'm', 'open', true, NOW(), 20, 1, 1, 1),
-    ('pix', 'g', 'making', false, NOW(), 50, 2, 2, 2),
-    ('money', 'p', 'finished', false, NOW(), 30, 1, 1, 1);
+    ('card', 'm', 'open', true, NOW(), 20.00, 1, 1, 1),
+    ('pix', 'g', 'making', false, NOW(), 50.00, 2, 2, 2),
+    ('money', 'p', 'finished', false, NOW(), 30.00, 1, 1, 1);
 
 -- order_items
 INSERT INTO public.order_items (order_id, product_id, quantity)
