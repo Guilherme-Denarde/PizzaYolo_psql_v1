@@ -48,7 +48,7 @@ CREATE TYPE public.order_state AS ENUM (
 -- Create tables
 CREATE TABLE public.register_user (
     user_id serial PRIMARY KEY NOT NULL,
-    name varchar(90) NOT NULL,
+    name varchar(90) UNIQUE NOT NULL,
     email varchar(255) UNIQUE NOT NULL, 
     password varchar(255) NOT NULL,
     salt varchar(255) NOT NULL,
@@ -70,9 +70,9 @@ CREATE TABLE public.address (
 CREATE TABLE public.employ (
     id serial PRIMARY KEY NOT NULL,
     user_id int,
-    cpf varchar(16) NOT NULL,
-    name varchar(90) NOT NULL,
-    phone varchar(15) NOT NULL,
+    cpf varchar(16) UNIQUE NOT NULL,
+    name varchar(90) UNIQUE NOT NULL,
+    phone varchar(15) UNIQUE NOT NULL,
     permission public.permision,
     salary int NOT NULL
 );
@@ -81,9 +81,9 @@ CREATE TABLE public.client (
     id serial PRIMARY KEY NOT NULL,
     user_id int,
     address_id int,
-    cpf varchar(16) NOT NULL,
-    name varchar(90) NOT NULL,
-    phone varchar(15) NOT NULL, 
+    cpf varchar(16) UNIQUE NOT NULL,
+    name varchar(90) UNIQUE NOT NULL,
+    phone varchar(15) UNIQUE NOT NULL, 
     CONSTRAINT fk_register_user
         FOREIGN KEY (user_id) REFERENCES public.register_user(user_id),
     CONSTRAINT fk_address
@@ -101,14 +101,14 @@ CREATE TABLE public.delivery_people (
 
 CREATE TABLE public.flavor (
     id serial PRIMARY KEY NOT NULL,
-    flavor_name varchar(90) NOT NULL,
+    flavor_name varchar(90) UNIQUE NOT NULL,
     flavor_price numeric(10, 2) NOT NULL,
     flavor_ingredients varchar(255)
 );
 
 CREATE TABLE public.product (
     id serial PRIMARY KEY NOT NULL,
-    product_name varchar(90) NOT NULL,
+    product_name varchar(90) UNIQUE NOT NULL,
     product_description varchar(255),
     price numeric(10, 2) NOT NULL,
     quantity int,
@@ -235,4 +235,3 @@ SELECT * FROM public.orders;
 SELECT * FROM public.order_items;
 SELECT * FROM public.reviews;
 SELECT * FROM public.report;
-
