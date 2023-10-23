@@ -112,6 +112,8 @@ CREATE TABLE public.product (
     product_description varchar(255),
     price numeric(10, 2) NOT NULL,
     quantity int,
+    image_url VARCHAR(255), 
+    stars INT, 
     product_flavor int,
     FOREIGN KEY (product_flavor) REFERENCES public.flavor(id)
 );
