@@ -205,11 +205,11 @@ VALUES
     ('Vegetarian', 10.49, 'Tomato sauce, mozzarella cheese, mushrooms, onions, bell peppers');
 
 --  product 
-INSERT INTO public.product (product_name, product_description, price, quantity, product_flavor)
+INSERT INTO public.product (product_name, product_description, price, quantity, product_flavor, image_url, stars)
 VALUES
-    ('Classic Margherita', 'Traditional Italian Margherita pizza', 9.99, 50, 1),
-    ('Spicy Pepperoni', 'Delicious pepperoni pizza with a spicy kick', 11.99, 40, 2),
-    ('Veggie Delight', 'Healthy and flavorful vegetarian pizza', 10.49, 30, 3);
+    ('Pizza', 'Traditional Italian Margherita pizza', 9.99, 50, 1, 'https://raw.githubusercontent.com/Guilherme-Denarde/Trabalhos_Facu/images/licensed-image.jpg', 5),
+    ('Pizza Pepperoni', 'Delicious pepperoni pizza with a spicy kick', 11.99, 40, 1, 'https://raw.githubusercontent.com/Guilherme-Denarde/Trabalhos_Facu/images/licensed-image.jpg', 4),
+    ('Pizza Veggie', 'Healthy and flavorful vegetarian pizza', 10.49, 30, 1, 'https://raw.githubusercontent.com/Guilherme-Denarde/Trabalhos_Facu/images/licensed-image.jpg', 4);
 
 -- order 
 INSERT INTO public.orders (payment, order_size, order_state, must_deliver, order_time, priceTotal, delivery_person_id, client_id, employ_id)
