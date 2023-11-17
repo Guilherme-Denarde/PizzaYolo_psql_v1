@@ -38,6 +38,7 @@ Table Order {
   payment_id int
   delivery_address_id int
   order_time timestamp
+  total_price float
   requires_delivery boolean
   status varchar(255) // Status do pedido (ex: 'Pendente', 'Pago')
 }
