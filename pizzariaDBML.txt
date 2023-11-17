@@ -1,0 +1,236 @@
+// Tabela User
+Table User {
+  id int [pk, increment]
+  name varchar(255)
+  email varchar(255)
+  password varchar(255)
+  phone varchar(20)
+  profile_picture varchar(255)
+  date_of_birth date
+  cpf varchar(20)
+  role_id int
+}
+
+// Tabela Role
+Table Role {
+  role_id int [pk, increment]
+  role_name varchar(255)
+}
+
+// Tabela Address
+Table Address {
+  id int [pk, increment]
+  user_id int
+  streetName varchar(255)
+  streetNum int
+  city varchar(255)
+  state varchar(255)
+  country varchar(255)
+  zipcode varchar(20)
+  additional_info text
+  is_default boolean
+}
+
+// Tabela Order
+Table Order {
+  id int [pk, increment]
+  user_id int
+  payment_id int
+  delivery_address_id int
+  order_time timestamp
+  requires_delivery boolean
+  status varchar(255) // Status do pedido (ex: 'Pendente', 'Pago')
+}
+
+// Tabela OrderStatus
+Table OrderStatus {
+  id int [pk, increment]
+  order_id int
+  status varchar(255)
+  status_time timestamp
+}
+
+// Tabela OrderItem
+Table OrderItem {
+  id int [pk, increment]
+  order_id int
+  product_id int
+  quantity int
+}
+
+// Tabela Product
+Table Product {
+  id int [pk, increment]
+  name varchar(255)
+  description varchar(255)
+  price float
+  category_id int
+  available boolean
+  discount boolean
+  discount_price float
+}
+
+// Tabela ProductImage
+Table ProductImage {
+  id int [pk, increment]
+  product_id int
+  image_url varchar(255)
+}
+
+// Tabela ProductCategory
+Table ProductCategory {
+  id int [pk, increment]
+  name varchar(255)
+}
+
+// Tabela Restaurant
+Table Restaurant {
+  id int [pk, increment]
+  name varchar(255)
+  address_id int
+  email varchar(255)
+  phone varchar(20)
+  description text
+  rating_average float
+}
+
+Table BankAccount {
+  id int [pk, increment]
+  restaurant_id int
+  bank_name varchar(255)
+  account_number varchar(255)
+  agency_number varchar(255)
+  // Outros detalhes bancários conforme necessário
+}
+// Tabela RestaurantImage
+Table RestaurantImage {
+  id int [pk, increment]
+  restaurant_id int
+  image_url varchar(255)
+}
+
+// Tabela RestaurantCategory
+Table RestaurantCategory {
+  id int [pk, increment]
+  name varchar(255)
+}
+
+// Tabela Restaurant_RestaurantCategory
+Table Restaurant_RestaurantCategory {
+  restaurant_id int [pk] //foreignh key
+  category_id int [pk] //foreignh key
+}
+
+// Tabela RestaurantHours
+Table RestaurantHours {
+  id int [pk, increment]
+  restaurant_id int
+  day_of_week int
+  open_time time
+  close_time time
+}
+
+// Tabela Review
+Table Review {
+  id int [pk, increment]
+  user_id int
+  restaurant_id int
+  rating int
+  comment text
+}
+
+// Tabela DeliveryPerson
+Table DeliveryPerson {
+  id int [pk, increment]
+  name varchar(255)
+  phone varchar(20)
+  vehicle_type varchar(50)
+  latitude float
+  longitude float
+}
+
+// Tabela Delivery
+Table Delivery {
+  id int [pk, increment]
+  delivery_person_id int
+  order_id int
+  delivery_time timestamp
+  status varchar(255)
+}
+
+// Tabela PaymentMethod
+Table PaymentMethod {
+  id int [pk, increment]
+  method_name varchar(255) // Ex: 'Dinheiro', 'Cartão', 'PIX'
+}
+
+// Tabela Card
+Table Card {
+  id int [pk, increment]
+  user_id int
+  card_number varchar(255)
+  cardholder_name varchar(255)
+  expiry_date date
+  cvv varchar(4)
+}
+
+// Tabela Payment
+Table Payment {
+  id int [pk, increment]
+  order_id int
+  amount float
+  payment_method_id int
+  card_id int // Opcional, usado se o método for cartão
+  status varchar(255) // Ex: 'Pendente', 'Concluído', 'Falhou'
+}
+
+// Tabela voucher 
+Table Voucher  {
+  id int [pk, increment]
+  description text
+  discount_rate float
+  start_date date
+  end_date date
+}
+
+// Tabela Order_Voucher
+Table Order_Voucher {
+  order_id int [pk] //foreignh key
+  voucher_id int [pk] //foreignh key
+}
+
+// Enumeradores
+Enum PaymentMethod {
+  pix
+  card
+  money
+  check
+}
+
+// Definição de relacionamentos
+Ref: Review.restaurant_id > Restaurant.id
+Ref: Address.user_id > User.id
+Ref: User.role_id > Role.role_id
+Ref: Order.user_id > User.id
+Ref: Order.payment_id > Payment.id
+Ref: Order.delivery_address_id > Address.id
+Ref: OrderStatus.order_id > Order.id
+Ref: OrderItem.order_id > Order.id
+Ref: OrderItem.product_id > Product.id
+Ref: Product.category_id > ProductCategory.id
+Ref: ProductImage.product_id > Product.id
+Ref: Restaurant.address_id > Address.id
+Ref: RestaurantImage.restaurant_id > Restaurant.id
+Ref: Restaurant_RestaurantCategory.restaurant_id > Restaurant.id
+Ref: Restaurant_RestaurantCategory.category_id > RestaurantCategory.id
+Ref: RestaurantHours.restaurant_id > Restaurant.id
+Ref: Review.user_id > User.id
+Ref: Card.user_id > User.id
+Ref: Payment.order_id > Order.id
+Ref: Payment.payment_method_id > PaymentMethod.id
+Ref: Payment.card_id > Card.id
+Ref: Delivery.delivery_person_id > DeliveryPerson.id
+Ref: Delivery.order_id > Order.id
+Ref: Order_Voucher.order_id > Order.id
+Ref: Order_Voucher.voucher_id > Voucher.id
+Ref: BankAccount.restaurant_id > Restaurant.id
