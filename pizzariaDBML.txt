@@ -14,7 +14,7 @@ Table User {
 // Tabela Role
 Table Role {
   role_id int [pk, increment]
-  role_name varchar(255)
+  role_name RoleEnum
 }
 
 // Tabela Address
@@ -37,17 +37,18 @@ Table Order {
   user_id int
   payment_id int
   delivery_address_id int
+  order_date date
   order_time timestamp
   total_price float
   requires_delivery boolean
-  status varchar(255) // Status do pedido (ex: 'Pendente', 'Pago')
+  status OrderStatusEnum 
 }
 
 // Tabela OrderStatus
 Table OrderStatus {
   id int [pk, increment]
   order_id int
-  status varchar(255)
+  status OrderStatusEnum
   status_time timestamp
 }
 
@@ -69,6 +70,7 @@ Table Product {
   available boolean
   discount boolean
   discount_price float
+  size ProductSize
 }
 
 // Tabela ProductImage
@@ -81,7 +83,7 @@ Table ProductImage {
 // Tabela ProductCategory
 Table ProductCategory {
   id int [pk, increment]
-  name varchar(255)
+  name ProductCategoryEnum
 }
 
 // Tabela Restaurant
@@ -126,7 +128,7 @@ Table Restaurant_RestaurantCategory {
 Table RestaurantHours {
   id int [pk, increment]
   restaurant_id int
-  day_of_week int
+  day_of_week DayOfWeekEnum
   open_time time
   close_time time
 }
@@ -145,7 +147,7 @@ Table DeliveryPerson {
   id int [pk, increment]
   name varchar(255)
   phone varchar(20)
-  vehicle_type varchar(50)
+  vehicle_type VehicleType
   latitude float
   longitude float
 }
@@ -156,13 +158,13 @@ Table Delivery {
   delivery_person_id int
   order_id int
   delivery_time timestamp
-  status varchar(255)
+  status DeliveryStatusEnum
 }
 
 // Tabela PaymentMethod
 Table PaymentMethod {
   id int [pk, increment]
-  method_name varchar(255) // Ex: 'Dinheiro', 'Cartão', 'PIX'
+  method_name PaymentMethodEnum 
 }
 
 // Tabela Card
@@ -182,7 +184,7 @@ Table Payment {
   amount float
   payment_method_id int
   card_id int // Opcional, usado se o método for cartão
-  status varchar(255) // Ex: 'Pendente', 'Concluído', 'Falhou'
+  status PaymentStatusEnum
 }
 
 // Tabela voucher 
@@ -202,10 +204,82 @@ Table Order_Voucher {
 
 // Enumeradores
 Enum PaymentMethod {
-  pix
-  card
-  money
-  check
+  PIX
+  CARD
+  MANEY
+}
+
+Enum PaymentMethodEnum {
+  PIX
+  CARD
+  MONEY
+}
+
+Enum PaymentStatusEnum {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+Enum RoleEnum {
+  ADMIN
+  USER
+  RESTAURANT
+}
+
+Enum ProductSize {
+  P
+  M
+  G
+  GG
+}
+
+Enum VehicleType {
+  BIKE
+  CAR
+  MOTORBIKE
+}
+
+Enum OrderStatusEnum {
+  Confirmed
+  Prepared
+  Ready_for_Delivery
+  Completed
+  Cancelled
+}
+
+Enum DeliveryStatusEnum {
+  PROCESSING
+  EN_ROUTE
+  DELIVERED
+}
+
+Enum ProductCategoryEnum {
+  BRASILEIRA
+  ITALIANA
+  JAPONESA
+  CHINESA
+  FAST_FOOD
+  VEGETARIANA
+  VEGANA
+  SOBREMESAS
+  LANCHES
+  PIZZA
+  MARISQUEIRA
+  PADARIA
+  CAFETERIA
+  MEXICANA
+  BEBIDA
+}
+
+Enum DayOfWeekEnum {
+  SUNDAY
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
 }
 
 // Definição de relacionamentos
