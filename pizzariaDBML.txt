@@ -41,7 +41,6 @@ Table Order {
   order_time timestamp
   total_price float
   requires_delivery boolean
-  status OrderStatusEnum 
 }
 
 // Tabela OrderStatus
@@ -67,6 +66,7 @@ Table Product {
   description varchar(255)
   price float
   category_id int
+  restaurant_id int // Foreign key to Restaurant table
   available boolean
   discount boolean
   discount_price float
@@ -115,7 +115,8 @@ Table RestaurantImage {
 // Tabela RestaurantCategory
 Table RestaurantCategory {
   id int [pk, increment]
-  name varchar(255)
+  name RestaurantCategoryEnum
+
 }
 
 // Tabela Restaurant_RestaurantCategory
@@ -254,7 +255,7 @@ Enum DeliveryStatusEnum {
   DELIVERED
 }
 
-Enum ProductCategoryEnum {
+Enum RestaurantCategoryEnum {
   BRASILEIRA
   ITALIANA
   JAPONESA
@@ -280,6 +281,19 @@ Enum DayOfWeekEnum {
   THURSDAY
   FRIDAY
   SATURDAY
+}
+
+Enum ProductCategoryEnum {
+  DRINKS
+  COMBOS
+  FAST_FOOD
+  DESSERTS
+  APPETIZERS
+  SALADS
+  PIZZA
+  PASTA
+  SEAFOOD 
+  VEGAN
 }
 
 // Definição de relacionamentos
@@ -309,3 +323,4 @@ Ref: Delivery.order_id > Order.id
 Ref: Order_Voucher.order_id > Order.id
 Ref: Order_Voucher.voucher_id > Voucher.id
 Ref: BankAccount.restaurant_id > Restaurant.id
+Ref: Product.restaurant_id > Restaurant.id
