@@ -1,3 +1,4 @@
+-- Enumerators
 CREATE TYPE payment_method_enum AS ENUM ('PIX', 'CARD', 'MONEY');
 CREATE TYPE payment_status_enum AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
 CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER', 'RESTAURANT');
@@ -5,12 +6,13 @@ CREATE TYPE product_size AS ENUM ('P', 'M', 'G', 'GG');
 CREATE TYPE vehicle_type AS ENUM ('BIKE', 'CAR', 'MOTORBIKE');
 CREATE TYPE order_status_enum AS ENUM ('Confirmed', 'Prepared', 'Ready_for_Delivery', 'Completed', 'Cancelled');
 CREATE TYPE delivery_status_enum AS ENUM ('PROCESSING', 'EN_ROUTE', 'DELIVERED');
-CREATE TYPE product_category_enum AS ENUM ('BRASILEIRA', 'ITALIANA', 'JAPONESA', 'CHINESA', 'FAST_FOOD', 'VEGETARIANA', 'VEGANA', 'SOBREMESAS', 'LANCHES', 'PIZZA', 'MARISQUEIRA', 'PADARIA', 'CAFETERIA', 'MEXICANA', 'BEBIDA');
+CREATE TYPE restaurant_category_enum AS ENUM ('BRASILEIRA', 'ITALIANA', 'JAPONESA', 'CHINESA', 'FAST_FOOD', 'VEGETARIANA', 'VEGANA', 'SOBREMESAS', 'LANCHES', 'PIZZA', 'MARISQUEIRA', 'PADARIA', 'CAFETERIA', 'MEXICANA', 'BEBIDA');
 CREATE TYPE day_of_week_enum AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
+CREATE TYPE product_category_enum AS ENUM ('DRINKS', 'COMBOS', 'FAST_FOOD', 'DESSERTS', 'APPETIZERS', 'SALADS', 'PIZZA', 'PASTA', 'SEAFOOD', 'VEGAN');
 
 -- Tables
 CREATE TABLE role (
-  role_id SERIAL PRIMARY KEY,
+  role_id BIGINT PRIMARY KEY,
   role_name role_enum
 );
 
@@ -67,7 +69,7 @@ CREATE TABLE card (
 
 CREATE TABLE payment (
   id BIGINT PRIMARY KEY,
-  order_id BIGINT, -- FK Set later due to dependency
+  order_id BIGINT REFERENCES "order" (id),
   amount FLOAT,
   payment_method_id BIGINT REFERENCES payment_method (id),
   card_id BIGINT REFERENCES card (id),
@@ -79,10 +81,20 @@ CREATE TABLE payment (
 
 CREATE TABLE product_category (
   id BIGINT PRIMARY KEY,
-  name product_category_enum,
+  name product_category_enum
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE restaurant (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(255),
+  address_id BIGINT REFERENCES address (id),
+  email VARCHAR(255),
+  phone VARCHAR(20),
+  description TEXT,
+  rating_average FLOAT
 );
 
 CREATE TABLE product (
@@ -91,9 +103,11 @@ CREATE TABLE product (
   description VARCHAR(255),
   price FLOAT,
   category_id BIGINT REFERENCES product_category (id),
+  restaurant_id BIGINT REFERENCES restaurant (id),
   available BOOLEAN,
   discount BOOLEAN,
   discount_price FLOAT,
+  size product_size
   "like" INT,
   size product_size,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -144,22 +158,9 @@ CREATE TABLE order_item (
   status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE restaurant (
-  id BIGINT PRIMARY KEY,
-  name VARCHAR(255),
-  address_id BIGINT REFERENCES address (id),
-  email VARCHAR(255),
-  phone VARCHAR(20),
-  description TEXT,
-  rating_average FLOAT,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  status BOOLEAN DEFAULT TRUE
-);
-
 CREATE TABLE restaurant_category (
   id BIGINT PRIMARY KEY,
-  name VARCHAR(255),
+  name restaurant_category_enum
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status BOOLEAN DEFAULT TRUE
