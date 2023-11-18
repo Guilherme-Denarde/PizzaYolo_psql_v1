@@ -11,7 +11,7 @@ CREATE TYPE day_of_week_enum AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY'
 CREATE TYPE product_category_enum AS ENUM ('DRINKS', 'COMBOS', 'FAST_FOOD', 'DESSERTS', 'APPETIZERS', 'SALADS', 'PIZZA', 'PASTA', 'SEAFOOD', 'VEGAN');
 
 -- Role Table
-CREATE TABLE role (
+CREATE TABLE "role" (
   role_id BIGINT PRIMARY KEY,
   role_name role_enum
 );
@@ -74,7 +74,7 @@ CREATE TABLE card (
 -- Payment Table
 CREATE TABLE payment (
   id BIGINT PRIMARY KEY,
-  order_id BIGINT REFERENCES "order" (id),
+  order_id BIGINT,
   amount FLOAT,
   payment_method_id BIGINT REFERENCES payment_method (id),
   card_id BIGINT REFERENCES card (id),
@@ -84,7 +84,6 @@ CREATE TABLE payment (
   status BOOLEAN DEFAULT TRUE
 );
 
--- Product Category Table
 CREATE TABLE product_category (
   id BIGINT PRIMARY KEY,
   name product_category_enum,
@@ -118,9 +117,8 @@ CREATE TABLE product (
   available BOOLEAN,
   discount BOOLEAN,
   discount_price FLOAT,
-  size product_size,
+  "size" product_size,
   "like" INT,
-  size product_size,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status BOOLEAN DEFAULT TRUE
@@ -292,3 +290,5 @@ CREATE TABLE flyway_schema_history (
   execution_time INT NOT NULL,
   success BOOLEAN NOT NULL
 );
+
+ALTER TABLE "payment" ADD FOREIGN KEY (order_id) REFERENCES "order"(id);
