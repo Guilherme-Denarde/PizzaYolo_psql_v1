@@ -1,22 +1,21 @@
--- Enumerators
-CREATE TYPE PaymentMethodEnum AS ENUM ('PIX', 'CARD', 'MONEY');
-CREATE TYPE PaymentStatusEnum AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
-CREATE TYPE RoleEnum AS ENUM ('ADMIN', 'USER', 'RESTAURANT');
-CREATE TYPE ProductSize AS ENUM ('P', 'M', 'G', 'GG');
-CREATE TYPE VehicleType AS ENUM ('BIKE', 'CAR', 'MOTORBIKE');
-CREATE TYPE OrderStatusEnum AS ENUM ('Confirmed', 'Prepared', 'Ready_for_Delivery', 'Completed', 'Cancelled');
-CREATE TYPE DeliveryStatusEnum AS ENUM ('PROCESSING', 'EN_ROUTE', 'DELIVERED');
-CREATE TYPE ProductCategoryEnum AS ENUM ('BRASILEIRA', 'ITALIANA', 'JAPONESA', 'CHINESA', 'FAST_FOOD', 'VEGETARIANA', 'VEGANA', 'SOBREMESAS', 'LANCHES', 'PIZZA', 'MARISQUEIRA', 'PADARIA', 'CAFETERIA', 'MEXICANA', 'BEBIDA');
-CREATE TYPE DayOfWeekEnum AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
+CREATE TYPE payment_method_enum AS ENUM ('PIX', 'CARD', 'MONEY');
+CREATE TYPE payment_status_enum AS ENUM ('PENDING', 'COMPLETED', 'FAILED');
+CREATE TYPE role_enum AS ENUM ('ADMIN', 'USER', 'RESTAURANT');
+CREATE TYPE product_size AS ENUM ('P', 'M', 'G', 'GG');
+CREATE TYPE vehicle_type AS ENUM ('BIKE', 'CAR', 'MOTORBIKE');
+CREATE TYPE order_status_enum AS ENUM ('Confirmed', 'Prepared', 'Ready_for_Delivery', 'Completed', 'Cancelled');
+CREATE TYPE delivery_status_enum AS ENUM ('PROCESSING', 'EN_ROUTE', 'DELIVERED');
+CREATE TYPE product_category_enum AS ENUM ('BRASILEIRA', 'ITALIANA', 'JAPONESA', 'CHINESA', 'FAST_FOOD', 'VEGETARIANA', 'VEGANA', 'SOBREMESAS', 'LANCHES', 'PIZZA', 'MARISQUEIRA', 'PADARIA', 'CAFETERIA', 'MEXICANA', 'BEBIDA');
+CREATE TYPE day_of_week_enum AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
 
 -- Tables
-CREATE TABLE "Role" (
+CREATE TABLE role (
   role_id SERIAL PRIMARY KEY,
-  role_name RoleEnum
+  role_name role_enum
 );
 
-CREATE TABLE "User" (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE "user" (
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
   email VARCHAR(255),
   password VARCHAR(255),
@@ -24,172 +23,245 @@ CREATE TABLE "User" (
   profile_picture VARCHAR(255),
   date_of_birth DATE,
   cpf VARCHAR(20),
-  role_id INT REFERENCES "Role" (role_id)
+  role_id BIGINT REFERENCES role (role_id),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Address" (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES "User" (id),
-  streetName VARCHAR(255),
-  streetNum INT,
+CREATE TABLE address (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT REFERENCES "user" (id),
+  street_name VARCHAR(255),
+  street_num INT,
   city VARCHAR(255),
   state VARCHAR(255),
   country VARCHAR(255),
-  zipcode VARCHAR(20),
+  postal_code VARCHAR(20),
   additional_info TEXT,
-  is_default BOOLEAN
+  is_default BOOLEAN,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "PaymentMethod" (
-  id SERIAL PRIMARY KEY,
-  method_name PaymentMethodEnum
+CREATE TABLE payment_method (
+  id BIGINT PRIMARY KEY,
+  method_name payment_method_enum,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Card" (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES "User" (id),
+CREATE TABLE card (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT REFERENCES "user" (id),
   card_number VARCHAR(255),
   cardholder_name VARCHAR(255),
   expiry_date DATE,
-  cvv VARCHAR(4)
+  cvv VARCHAR(4),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Payment" (
-  id SERIAL PRIMARY KEY,
-  order_id INT, -- FK Set later due to dependency
+CREATE TABLE payment (
+  id BIGINT PRIMARY KEY,
+  order_id BIGINT, -- FK Set later due to dependency
   amount FLOAT,
-  payment_method_id INT REFERENCES "PaymentMethod" (id),
-  card_id INT REFERENCES "Card" (id),
-  status PaymentStatusEnum
+  payment_method_id BIGINT REFERENCES payment_method (id),
+  card_id BIGINT REFERENCES card (id),
+  payment_status payment_status_enum,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "ProductCategory" (
-  id SERIAL PRIMARY KEY,
-  name ProductCategoryEnum
+CREATE TABLE product_category (
+  id BIGINT PRIMARY KEY,
+  name product_category_enum,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Product" (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE product (
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
   description VARCHAR(255),
   price FLOAT,
-  category_id INT REFERENCES "ProductCategory" (id),
+  category_id BIGINT REFERENCES product_category (id),
   available BOOLEAN,
   discount BOOLEAN,
   discount_price FLOAT,
-  size ProductSize
+  "like" INT,
+  size product_size,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "ProductImage" (
-  id SERIAL PRIMARY KEY,
-  product_id INT REFERENCES "Product" (id),
-  image_url VARCHAR(255)
+CREATE TABLE product_image (
+  id BIGINT PRIMARY KEY,
+  product_id BIGINT REFERENCES product (id),
+  image_url VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Order" (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES "User" (id),
-  payment_id INT REFERENCES "Payment" (id),
-  delivery_address_id INT REFERENCES "Address" (id),
+CREATE TABLE "order" (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT REFERENCES "user" (id),
+  payment_id BIGINT REFERENCES payment (id),
+  delivery_address_id BIGINT REFERENCES address (id),
   order_date DATE,
   order_time TIMESTAMP,
   total_price FLOAT,
   requires_delivery BOOLEAN,
-  status OrderStatusEnum
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "OrderStatus" (
-  id SERIAL PRIMARY KEY,
-  order_id INT REFERENCES "Order" (id),
-  status OrderStatusEnum,
-  status_time TIMESTAMP
+CREATE TABLE order_status (
+  id BIGINT PRIMARY KEY,
+  order_id BIGINT REFERENCES "order" (id),
+  order_status order_status_enum,
+  status_time TIMESTAMP,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "OrderItem" (
-  id SERIAL PRIMARY KEY,
-  order_id INT REFERENCES "Order" (id),
-  product_id INT REFERENCES "Product" (id),
-  quantity INT
+CREATE TABLE order_item (
+  id BIGINT PRIMARY KEY,
+  order_id BIGINT REFERENCES "order" (id),
+  product_id BIGINT REFERENCES product (id),
+  quantity INT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Restaurant" (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE restaurant (
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
-  address_id INT REFERENCES "Address" (id),
+  address_id BIGINT REFERENCES address (id),
   email VARCHAR(255),
   phone VARCHAR(20),
   description TEXT,
-  rating_average FLOAT
+  rating_average FLOAT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "RestaurantCategory" (
-  id SERIAL PRIMARY KEY,
-  name VARCHAR(255)
+CREATE TABLE restaurant_category (
+  id BIGINT PRIMARY KEY,
+  name VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Restaurant_RestaurantCategory" (
-  restaurant_id INT REFERENCES "Restaurant" (id),
-  category_id INT REFERENCES "RestaurantCategory" (id),
+CREATE TABLE restaurant_restaurant_category (
+  restaurant_id BIGINT REFERENCES restaurant (id),
+  category_id BIGINT REFERENCES restaurant_category (id),
   PRIMARY KEY (restaurant_id, category_id)
 );
 
-CREATE TABLE "RestaurantImage" (
-  id SERIAL PRIMARY KEY,
-  restaurant_id INT REFERENCES "Restaurant" (id),
-  image_url VARCHAR(255)
+CREATE TABLE restaurant_image (
+  id BIGINT PRIMARY KEY,
+  restaurant_id BIGINT REFERENCES restaurant (id),
+  image_url VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "RestaurantHours" (
-  id SERIAL PRIMARY KEY,
-  restaurant_id INT REFERENCES "Restaurant" (id),
-  day_of_week DayOfWeekEnum,
+CREATE TABLE restaurant_hours (
+  id BIGINT PRIMARY KEY,
+  restaurant_id BIGINT REFERENCES restaurant (id),
+  day_of_week day_of_week_enum,
   open_time TIME,
-  close_time TIME
+  close_time TIME,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Review" (
-  id SERIAL PRIMARY KEY,
-  user_id INT REFERENCES "User" (id),
-  restaurant_id INT REFERENCES "Restaurant" (id),
+CREATE TABLE review (
+  id BIGINT PRIMARY KEY,
+  user_id BIGINT REFERENCES "user" (id),
+  restaurant_id BIGINT REFERENCES restaurant (id),
   rating INT,
-  comment TEXT
+  comment TEXT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "DeliveryPerson" (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE delivery_person (
+  id BIGINT PRIMARY KEY,
   name VARCHAR(255),
   phone VARCHAR(20),
-  vehicle_type VehicleType,
+  vehicle_type vehicle_type,
   latitude FLOAT,
-  longitude FLOAT
+  longitude FLOAT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Delivery" (
-  id SERIAL PRIMARY KEY,
-  delivery_person_id INT REFERENCES "DeliveryPerson" (id),
-  order_id INT REFERENCES "Order" (id),
+CREATE TABLE delivery (
+  id BIGINT PRIMARY KEY,
+  delivery_person_id BIGINT REFERENCES delivery_person (id),
+  order_id BIGINT REFERENCES "order" (id),
   delivery_time TIMESTAMP,
-  status DeliveryStatusEnum
+  status_delivery delivery_status_enum,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Voucher" (
-  id SERIAL PRIMARY KEY,
+CREATE TABLE voucher (
+  id BIGINT PRIMARY KEY,
   description TEXT,
   discount_rate FLOAT,
   start_date DATE,
-  end_date DATE
+  end_date DATE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
-CREATE TABLE "Order_Voucher" (
-  order_id INT REFERENCES "Order" (id),
-  voucher_id INT REFERENCES "Voucher" (id),
+CREATE TABLE order_voucher (
+  order_id BIGINT REFERENCES "order" (id),
+  voucher_id BIGINT REFERENCES voucher (id),
   PRIMARY KEY (order_id, voucher_id)
 );
 
-CREATE TABLE "BankAccount" (
-  id SERIAL PRIMARY KEY,
-  restaurant_id INT REFERENCES "Restaurant" (id),
+CREATE TABLE bank_account (
+  id BIGINT PRIMARY KEY,
+  restaurant_id BIGINT REFERENCES restaurant (id),
   bank_name VARCHAR(255),
   account_number VARCHAR(255),
-  agency_number VARCHAR(255)
+  agency_number VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
+);
+
+CREATE TABLE flyway_schema_history (
+  installed_rank INT NOT NULL,
+  version VARCHAR(50),
+  description VARCHAR(200),
+  type VARCHAR(20),
+  script VARCHAR(1000) NOT NULL,
+  checksum INT,
+  installed_by VARCHAR(100) NOT NULL,
+  installed_on TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  execution_time INT NOT NULL,
+  success BOOLEAN NOT NULL
 );
