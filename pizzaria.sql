@@ -10,12 +10,13 @@ CREATE TYPE restaurant_category_enum AS ENUM ('BRASILEIRA', 'ITALIANA', 'JAPONES
 CREATE TYPE day_of_week_enum AS ENUM ('SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY');
 CREATE TYPE product_category_enum AS ENUM ('DRINKS', 'COMBOS', 'FAST_FOOD', 'DESSERTS', 'APPETIZERS', 'SALADS', 'PIZZA', 'PASTA', 'SEAFOOD', 'VEGAN');
 
--- Tables
+-- Role Table
 CREATE TABLE role (
   role_id BIGINT PRIMARY KEY,
   role_name role_enum
 );
 
+-- User Table
 CREATE TABLE "user" (
   id BIGINT PRIMARY KEY,
   name VARCHAR(255),
@@ -31,6 +32,7 @@ CREATE TABLE "user" (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Address Table
 CREATE TABLE address (
   id BIGINT PRIMARY KEY,
   user_id BIGINT REFERENCES "user" (id),
@@ -47,6 +49,7 @@ CREATE TABLE address (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Payment Method Table
 CREATE TABLE payment_method (
   id BIGINT PRIMARY KEY,
   method_name payment_method_enum,
@@ -55,6 +58,7 @@ CREATE TABLE payment_method (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Card Table
 CREATE TABLE card (
   id BIGINT PRIMARY KEY,
   user_id BIGINT REFERENCES "user" (id),
@@ -67,6 +71,7 @@ CREATE TABLE card (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Payment Table
 CREATE TABLE payment (
   id BIGINT PRIMARY KEY,
   order_id BIGINT REFERENCES "order" (id),
@@ -79,14 +84,16 @@ CREATE TABLE payment (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Product Category Table
 CREATE TABLE product_category (
   id BIGINT PRIMARY KEY,
-  name product_category_enum
+  name product_category_enum,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Restaurant Table
 CREATE TABLE restaurant (
   id BIGINT PRIMARY KEY,
   name VARCHAR(255),
@@ -94,9 +101,13 @@ CREATE TABLE restaurant (
   email VARCHAR(255),
   phone VARCHAR(20),
   description TEXT,
-  rating_average FLOAT
+  rating_average FLOAT,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  status BOOLEAN DEFAULT TRUE
 );
 
+-- Product Table
 CREATE TABLE product (
   id BIGINT PRIMARY KEY,
   name VARCHAR(255),
@@ -107,7 +118,7 @@ CREATE TABLE product (
   available BOOLEAN,
   discount BOOLEAN,
   discount_price FLOAT,
-  size product_size
+  size product_size,
   "like" INT,
   size product_size,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -115,6 +126,7 @@ CREATE TABLE product (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Product Image Table
 CREATE TABLE product_image (
   id BIGINT PRIMARY KEY,
   product_id BIGINT REFERENCES product (id),
@@ -124,6 +136,7 @@ CREATE TABLE product_image (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Order Table
 CREATE TABLE "order" (
   id BIGINT PRIMARY KEY,
   user_id BIGINT REFERENCES "user" (id),
@@ -138,6 +151,7 @@ CREATE TABLE "order" (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Order Status Table
 CREATE TABLE order_status (
   id BIGINT PRIMARY KEY,
   order_id BIGINT REFERENCES "order" (id),
@@ -148,6 +162,7 @@ CREATE TABLE order_status (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Order Item Table
 CREATE TABLE order_item (
   id BIGINT PRIMARY KEY,
   order_id BIGINT REFERENCES "order" (id),
@@ -158,20 +173,23 @@ CREATE TABLE order_item (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Restaurant Category Table
 CREATE TABLE restaurant_category (
   id BIGINT PRIMARY KEY,
-  name restaurant_category_enum
+  name restaurant_category_enum,  
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Restaurant Restaurant Category Table
 CREATE TABLE restaurant_restaurant_category (
   restaurant_id BIGINT REFERENCES restaurant (id),
   category_id BIGINT REFERENCES restaurant_category (id),
   PRIMARY KEY (restaurant_id, category_id)
 );
 
+-- Restaurant Image Table
 CREATE TABLE restaurant_image (
   id BIGINT PRIMARY KEY,
   restaurant_id BIGINT REFERENCES restaurant (id),
@@ -181,6 +199,7 @@ CREATE TABLE restaurant_image (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Restaurant Hours Table
 CREATE TABLE restaurant_hours (
   id BIGINT PRIMARY KEY,
   restaurant_id BIGINT REFERENCES restaurant (id),
@@ -192,6 +211,7 @@ CREATE TABLE restaurant_hours (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Review Table
 CREATE TABLE review (
   id BIGINT PRIMARY KEY,
   user_id BIGINT REFERENCES "user" (id),
@@ -203,6 +223,7 @@ CREATE TABLE review (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Delivery Person Table
 CREATE TABLE delivery_person (
   id BIGINT PRIMARY KEY,
   name VARCHAR(255),
@@ -215,6 +236,7 @@ CREATE TABLE delivery_person (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Delivery Table
 CREATE TABLE delivery (
   id BIGINT PRIMARY KEY,
   delivery_person_id BIGINT REFERENCES delivery_person (id),
@@ -226,6 +248,7 @@ CREATE TABLE delivery (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Voucher Table
 CREATE TABLE voucher (
   id BIGINT PRIMARY KEY,
   description TEXT,
@@ -237,12 +260,14 @@ CREATE TABLE voucher (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Order Voucher Table
 CREATE TABLE order_voucher (
   order_id BIGINT REFERENCES "order" (id),
   voucher_id BIGINT REFERENCES voucher (id),
   PRIMARY KEY (order_id, voucher_id)
 );
 
+-- Bank Account Table
 CREATE TABLE bank_account (
   id BIGINT PRIMARY KEY,
   restaurant_id BIGINT REFERENCES restaurant (id),
@@ -254,6 +279,7 @@ CREATE TABLE bank_account (
   status BOOLEAN DEFAULT TRUE
 );
 
+-- Flyway Schema History Table
 CREATE TABLE flyway_schema_history (
   installed_rank INT NOT NULL,
   version VARCHAR(50),
